@@ -9,3 +9,10 @@ class ListTodosQuery(BaseModel):
 
         return todos
 
+class TodoByIdQuery(BaseModel):
+    id: str
+
+    def execute(self) -> Todo:
+        todo = Todo.get_by_id(self.id)
+        return todo
+
