@@ -1,7 +1,7 @@
 import pytest
 
 from todolist.models import Todo
-from todolist.commands import CreateTodoCommand, AlreadyExists
+from todolist.commands import CreateTodoCommand, AlreadyExists, FlipIsDoneByIdCommand
 
 def test_create_todo():
     cmd = CreateTodoCommand(
@@ -33,4 +33,15 @@ def test_create_already_exists():
 
     with pytest.raises(AlreadyExists):
             cmd.execute()
-    
+
+def test_is_done_flip():
+    todo = Todo(
+        title="New Todo",
+        description="The First Todo ever created",
+        is_done=False
+    ).save()
+
+    cmd = FlipIsDoneByIdCommand(id=todo.id)
+
+    assert cmd.execute() == True
+    assert cmd.execute() == False

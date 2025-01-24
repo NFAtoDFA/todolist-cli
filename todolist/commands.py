@@ -23,3 +23,10 @@ class CreateTodoCommand(BaseModel):
         ).save()
 
         return todo
+
+class FlipIsDoneByIdCommand(BaseModel):
+    id: str
+
+    def execute(self) -> bool:
+        new_is_done = Todo.flip_is_done_by_id(self.id)
+        return new_is_done

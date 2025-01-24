@@ -50,6 +50,21 @@ class Todo(BaseModel):
         return todo_entry
 
     @classmethod
+    def flip_is_done_by_id(cls, todo_id) -> bool:
+        con = sqlite3.connect(os.getenv("DATABASE_NAME", "database.db"))
+        con.row_factory = sqlite3.Row
+
+        cur = con.cursor()
+        record = cur.execute("SELECT * FROM todos WHERE id=?", (todo_id,)).fetchone()
+        todo = cls(**record)
+        is_done = (not todo.is_done)
+        cur.execute("UPDATE todos SET is_done=? WHERE id=?", (is_done, todo_id))
+        con.commit()
+
+        return is_done
+
+
+    @classmethod
     def list(cls) -> List['Todo']:
         con = sqlite3.connect(os.getenv("DATABASE_NAME", "database.db"))
         con.row_factory = sqlite3.Row
