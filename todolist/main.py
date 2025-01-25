@@ -5,11 +5,13 @@ from app import TodoApp
 @click.group()
 @click.pass_context
 @click.option('--list','-l',is_flag=True, help='List Tasks after Update.')
-def cli(ctx,list):
+@click.option('--list-open','-lo',is_flag=True, help='List Open Tasks after Update.')
+def cli(ctx,list,list_open):
     """A Simple CLI-based To-Do app."""
     ctx.ensure_object(dict)
     ctx.obj['app'] = TodoApp()
     ctx.obj['list'] = list
+    ctx.obj['list-open'] = list_open
 
 @cli.command()
 @click.argument('task_name')
@@ -22,6 +24,26 @@ def add(ctx, task_name):
     
     if ctx.obj['list']:
         ctx.invoke(list)
+    
+    if ctx.obj['list-open']:
+        ctx.invoke(list_open)
+
+
+@cli.command()
+@click.pass_context
+def list_open(ctx):
+    """List all open Tasks"""
+    app = ctx.obj['app']
+    todo_list = app.list_tasks_not_done()
+    click.echo(f'Open Tasks:')
+    for todo in todo_list:
+        if todo.is_done:
+            done_symbol = '[X]'
+        else:
+            done_symbol = '[ ]'
+        click.echo(f'{done_symbol} | {todo.title}')
+        click.echo(30 * '-')
+        click.echo(f'{todo.description}')
 
 @cli.command()
 @click.pass_context
@@ -50,6 +72,9 @@ def flip(ctx, task_name):
 
     if ctx.obj['list']:
         ctx.invoke(list)
+    
+    if ctx.obj['list-open']:
+        ctx.invoke(list_open)
 
 @cli.command()
 @click.pass_context
@@ -63,6 +88,9 @@ def set_description(ctx, task_name, task_description):
     
     if ctx.obj['list']:
         ctx.invoke(list)
+    
+    if ctx.obj['list-open']:
+        ctx.invoke(list_open)
 
 if __name__ == '__main__':
     cli()
