@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from todolist.models import Todo, NotFound
+from models import Todo, NotFound
 
 class AlreadyExists(Exception):
     pass
